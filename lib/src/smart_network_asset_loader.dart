@@ -26,11 +26,10 @@ class SmartNetworkAssetLoader extends AssetLoader {
 
   final Duration localCacheDuration;
 
-  SmartNetworkAssetLoader(
-      {required this.localeUrl,
-      this.timeout = const Duration(seconds: 30),
-      required this.assetsPath,
-      this.localCacheDuration = const Duration(days: 1)});
+  SmartNetworkAssetLoader({required this.localeUrl,
+    this.timeout = const Duration(seconds: 30),
+    required this.assetsPath,
+    this.localCacheDuration = const Duration(days: 1)});
 
   @override
   Future<Map<String, dynamic>> load(String localePath, Locale locale) async {
@@ -90,7 +89,7 @@ class SmartNetworkAssetLoader extends AssetLoader {
 
     try {
       final response =
-          await Future.any([http.get(Uri.parse(url)), Future.delayed(timeout)]);
+      await Future.any([http.get(Uri.parse(url)), Future.delayed(timeout)]);
 
       if (response != null && response.statusCode == 200) {
         var content = utf8.decode(response.bodyBytes);
@@ -119,7 +118,7 @@ class SmartNetworkAssetLoader extends AssetLoader {
     // don't check file's age
     if (!ignoreCacheDuration) {
       var difference =
-          DateTime.now().difference(await translationFile.lastModified());
+      DateTime.now().difference(await translationFile.lastModified());
 
       if (difference > (localCacheDuration)) {
         return false;
