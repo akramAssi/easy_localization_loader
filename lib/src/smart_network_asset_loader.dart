@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart' as paths;
 
@@ -48,13 +47,16 @@ class SmartNetworkAssetLoader extends AssetLoader {
     }
 
     // local cache duration was reached or no internet access but prefer local file to assets
-    if (string == '' && await localTranslationExists(locale.toString(), ignoreCacheDuration: false)) {
+    if (string == '' &&
+        await localTranslationExists(locale.toString(),
+            ignoreCacheDuration: true)) {
       string = await loadFromLocalFile(locale.toString());
     }
 
     // still nothing? Load from assets
     if (string == '') {
-      string = await rootBundle.loadString(assetsPath + '/' + locale.toString() + '.json');
+      string = await rootBundle
+          .loadString(assetsPath + '/' + locale.toString() + '.json');
     }
 
     // then returns the json file
@@ -87,7 +89,8 @@ class SmartNetworkAssetLoader extends AssetLoader {
     url = url + '' + localeName + '.json';
 
     try {
-      final response = await Future.any([http.get(Uri.parse(url)), Future.delayed(timeout)]);
+      final response =
+          await Future.any([http.get(Uri.parse(url)), Future.delayed(timeout)]);
 
       if (response != null && response.statusCode == 200) {
         var content = utf8.decode(response.bodyBytes);
@@ -105,7 +108,8 @@ class SmartNetworkAssetLoader extends AssetLoader {
     return '';
   }
 
-  Future<bool> localTranslationExists(String localeName, {bool ignoreCacheDuration = false}) async {
+  Future<bool> localTranslationExists(String localeName,
+      {bool ignoreCacheDuration = false}) async {
     var translationFile = await getFileForLocale(localeName);
 
     if (!await translationFile.exists()) {
@@ -114,7 +118,8 @@ class SmartNetworkAssetLoader extends AssetLoader {
 
     // don't check file's age
     if (!ignoreCacheDuration) {
-      var difference = DateTime.now().difference(await translationFile.lastModified());
+      var difference =
+          DateTime.now().difference(await translationFile.lastModified());
 
       if (difference > (localCacheDuration)) {
         return false;
@@ -132,7 +137,7 @@ class SmartNetworkAssetLoader extends AssetLoader {
     var file = File(await getFilenameForLocale(localeName));
     await file.create(recursive: true);
     await file.writeAsString(content);
-    return debugPrint('save translation');
+    return print('saved');
   }
 
   Future<String> get _localPath async {
